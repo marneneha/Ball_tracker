@@ -56,6 +56,8 @@ x2_term = np.array([np.multiply(trajectory[:,0], trajectory[:,0])])
 x2_term = x2_term.T
 print(x2_term)
 equation = np.append(x2_term, trajectory, axis=1)
+equation = np.delete(equation, 0, 0)
+equation = np.delete(equation, 0, 0)
 print("equation is")
 print(equation)
 # When everything done, release the video capture object
