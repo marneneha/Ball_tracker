@@ -18,7 +18,7 @@ while (cap.isOpened()):
     upper_mask_limit = np.array([2, 255, 255])
     mask = cv2.inRange(hsv, lower_mask_limit, upper_mask_limit)
     pixel = np.argwhere(mask == 255)
-    if ret == True and pixel.any():
+    if ret == True:
         # Display the resulting frame
         print(mask.shape)
         contours, hierarchies = cv2.findContours(mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
@@ -39,47 +39,47 @@ while (cap.isOpened()):
             # if cx<562 and cy<1218:
                 # mask[cx, cy] = (255, 0, 0)
         # out = cv2.VideoWriter('ball.mov',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (562,1218))
+        if trajectory.size > 6:
+            print("no ball found")
+            print("trajectory is")
+            print(trajectory)
+            x2_term = np.array([np.multiply(trajectory[:,0], trajectory[:,0])])
+            x2_term = x2_term.T
+            print(x2_term)
+            equation = np.append(x2_term, trajectory, axis=1)
+            equation = np.delete(equation, 0, 0)
+            equation = np.delete(equation, 0, 0)
+            print("equation is")
+            print(equation)
+            Y = equation[:,2]
+            X = np.delete(equation, 2, 1)
+            # Create an array of all ones
+            print("shape of Y is")
+            print(Y.size)
+            vec_of_ones = np.ones((Y.size,1))
+            print("vec_of_one is")
+            print(vec_of_ones)
+            X = np.append(X, vec_of_ones, axis=1)
+            print("X is")
+            print(X)
+            print("Y is")
+            print(Y)
+            B = np.dot(np.linalg.inv(np.dot(X.T,X)), np.dot(X.T,Y))
+            print("B matrix is")
+            print(B)
+            for i in range (1, 1200, 10):
+                x = int(i)
+                y = int(B[0]*x*x + B[1]*x + B[2])
+                print(f"x: {x} y: {y}")
+                cv2.circle(frame, (x, y), 7, (255, 0, 0), -1)
+                cv2.imshow('Frame',frame)
+
         cv2.imshow('Frame',frame)
         cv2.imshow("mask", mask)
         # Press Q on keyboard to  exit
         if cv2.waitKey(25) & 0xFF == ord('q'):
             break
-        
-    elif (ret == True) and (not pixel.any()) and (trajectory.size > 2):
-        print("no ball found")
-        print("trajectory is")
-        print(trajectory)
-        x2_term = np.array([np.multiply(trajectory[:,0], trajectory[:,0])])
-        x2_term = x2_term.T
-        print(x2_term)
-        equation = np.append(x2_term, trajectory, axis=1)
-        equation = np.delete(equation, 0, 0)
-        equation = np.delete(equation, 0, 0)
-        print("equation is")
-        print(equation)
-        Y = equation[:,2]
-        X = np.delete(equation, 2, 1)
-        # Create an array of all ones
-        print("shape of Y is")
-        print(Y.size)
-        vec_of_ones = np.ones((Y.size,1))
-        print("vec_of_one is")
-        print(vec_of_ones)
-        X = np.append(X, vec_of_ones, axis=1)
-        print("X is")
-        print(X)
-        print("Y is")
-        print(Y)
-        B = np.dot(np.linalg.inv(np.dot(X.T,X)), np.dot(X.T,Y))
-        print("B matrix is")
-        print(B)
-        for i in range (1, 1200, 10):
-            x = int(i)
-            y = int(B[0]*x*x + B[1]*x + B[2])
-            print(f"x: {x} y: {y}")
-            cv2.circle(frame, (x, y), 7, (255, 0, 0), -1)
-            cv2.imshow('Frame',frame)
-
+    
     # Break the loop
     else: 
         break
