@@ -49,7 +49,7 @@ while (cap.isOpened()):
             for i in range (1, 1200, 10):
                 x = int(i)
                 y = int(B[0]*x*x + B[1]*x + B[2])
-                cv2.circle(frame, (x, y), 4, (255, 0, 0), -1)
+                cv2.circle(frame, (x, y), 3, (255, 0, 0), -1)
                 cv2.imshow('Frame',frame)
 
         cv2.imshow('Frame',frame)
@@ -63,14 +63,16 @@ while (cap.isOpened()):
         break
 
 print("Coefficients of Quadratic equation are")
-B = np.array([B])
-B = B.T
-x_init = trajectory[2,1]
-x_init = x_init + 300
-x_init_equ = np.array([[x_init*x_init, x_init, 1]])
-y_final = np.dot(x_init_equ, B)
-print("y_final is")
-print(y_final)
+print(B)
+y_init = trajectory[2,1]
+y_init = y_init + 300
+a = B[0]
+b = B[1]
+c = B[2]
+c = c-y_init
+x_final = (-1*b+np.sqrt(b*b-4*a*c))/(2*a)
+print("x_final is")
+print(x_final)
 # When everything done, release the video capture object
 cap.release()
 
