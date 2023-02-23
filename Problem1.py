@@ -2,8 +2,6 @@ import numpy as np
 import cv2 as cv2
 import matplotlib.pyplot as plt
 from cv_bridge import CvBridge
-#394,450
-# print("inside project 1 file")
 cap = cv2.VideoCapture('ball.mov')
 if (cap.isOpened()==False):
     print("error on opening ")
@@ -20,11 +18,9 @@ while (cap.isOpened()):
     pixel = np.argwhere(mask == 255)
     if ret == True:
         # Display the resulting frame
-        print(mask.shape)
         contours, hierarchies = cv2.findContours(mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         blank = np.zeros(mask.shape[:2],dtype='uint8')
         cv2.drawContours(blank, contours, -1, (255, 0, 0), 1)
-        cv2.imwrite("Contours.png", blank)
         for i in contours:
             M = cv2.moments(i)
             if M['m00'] != 0:
@@ -35,43 +31,25 @@ while (cap.isOpened()):
                 cv2.drawContours(frame, [i], -1, (0, 255, 0), 2)
                 cv2.circle(frame, (cx, cy), 7, (0, 0, 255), -1)
                 cv2.putText(frame, "center", (cx - 20, cy - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
-            print(f"x: {cx} y: {cy}")
             # if cx<562 and cy<1218:
                 # mask[cx, cy] = (255, 0, 0)
         # out = cv2.VideoWriter('ball.mov',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (562,1218))
         if trajectory.size > 6:
-            print("no ball found")
-            print("trajectory is")
-            print(trajectory)
             x2_term = np.array([np.multiply(trajectory[:,0], trajectory[:,0])])
             x2_term = x2_term.T
-            print(x2_term)
             equation = np.append(x2_term, trajectory, axis=1)
             equation = np.delete(equation, 0, 0)
             equation = np.delete(equation, 0, 0)
-            print("equation is")
-            print(equation)
             Y = equation[:,2]
             X = np.delete(equation, 2, 1)
             # Create an array of all ones
-            print("shape of Y is")
-            print(Y.size)
             vec_of_ones = np.ones((Y.size,1))
-            print("vec_of_one is")
-            print(vec_of_ones)
             X = np.append(X, vec_of_ones, axis=1)
-            print("X is")
-            print(X)
-            print("Y is")
-            print(Y)
             B = np.dot(np.linalg.inv(np.dot(X.T,X)), np.dot(X.T,Y))
-            print("B matrix is")
-            print(B)
             for i in range (1, 1200, 10):
                 x = int(i)
                 y = int(B[0]*x*x + B[1]*x + B[2])
-                print(f"x: {x} y: {y}")
-                cv2.circle(frame, (x, y), 7, (255, 0, 0), -1)
+                cv2.circle(frame, (x, y), 4, (255, 0, 0), -1)
                 cv2.imshow('Frame',frame)
 
         cv2.imshow('Frame',frame)
@@ -84,8 +62,15 @@ while (cap.isOpened()):
     else: 
         break
 
-
-
+print("Coefficients of Quadratic equation are")
+B = np.array([B])
+B = B.T
+x_init = trajectory[2,1]
+x_init = x_init + 300
+x_init_equ = np.array([[x_init*x_init, x_init, 1]])
+y_final = np.dot(x_init_equ, B)
+print("y_final is")
+print(y_final)
 # When everything done, release the video capture object
 cap.release()
 
