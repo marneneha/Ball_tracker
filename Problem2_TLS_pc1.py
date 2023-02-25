@@ -13,11 +13,15 @@ z_data = z_data.T
 x_mean = np.mean(x_data)
 y_mean = np.mean(y_data)
 z_mean = np.mean(z_data)
-vec_of_ones = np.ones((y_data.size,1))
-X = np.append(x_data, y_data, axis=1)
-X = np.append(X, vec_of_ones, axis=1)
-Y = z_data
-B = np.dot(np.linalg.inv(np.dot(X.T,X)), np.dot(X.T,Y))
-print("B matrix is")
+normalised_x_data = x_data-x_mean
+normalised_y_data = y_data-y_mean
+normalised_z_data = z_data-z_mean
+
+U = np.append(normalised_x_data, normalised_y_data, axis=1)
+U = np.append(U, normalised_z_data, axis=1)
+TL_Matrix = np.dot(U.T,U)
+w, v = np.linalg.eig(TL_Matrix)
+B = v[:,0]
+print("B is")
 print(B)
 
