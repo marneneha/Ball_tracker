@@ -14,8 +14,8 @@ node_list = deque([input_mat])
 global goal_node, match_found
 match_found = False
 goal_node = np.array([[1,2,3],[4,5,6],[7,8,0]])
-visited_node_list = {}
-
+generated_graph = {}
+visited_nodes = [input_mat]
 def goal_node_check(input_node_copy):
     global match_found
     if(np.array_equal(goal_node, input_node_copy)):
@@ -35,6 +35,7 @@ def add_right_node(node, index_i, index_j):
             if(previous_node_check(input_node_copy)):
                 return False
             node_list.append(input_node_copy)
+            visited_nodes.append(input_node_copy)
             return True
 
 def add_left_node(node, index_i, index_j):
@@ -45,6 +46,7 @@ def add_left_node(node, index_i, index_j):
             if(previous_node_check(input_node_copy)):
                 return False
             node_list.append(input_node_copy)
+            visited_nodes.append(input_node_copy)
             return True
 
 def add_up_node(node, index_i, index_j):
@@ -55,6 +57,7 @@ def add_up_node(node, index_i, index_j):
             if(previous_node_check(input_node_copy)):
                 return False
             node_list.append(input_node_copy)
+            visited_nodes.append(input_node_copy)
             return True
 
 def add_down_node(node, index_i, index_j):
@@ -65,6 +68,7 @@ def add_down_node(node, index_i, index_j):
             if(previous_node_check(input_node_copy)):
                 return False
             node_list.append(input_node_copy)
+            visited_nodes.append(input_node_copy)
             return True
 
 def generate_children(node):
@@ -95,11 +99,29 @@ node_count_iterator = 1
 global_node_count = 1
 while(not match_found):
     children_list  = generate_children(node_list[0])
-    visited_node_list[node_count_iterator] = children_list
+    generated_graph[node_count_iterator] = children_list
     node_count_iterator=node_count_iterator+1
     node_list.popleft()
-    print("node list is")
-    pprint(node_list)
-    print("visited node list is")
-    pprint(visited_node_list)
+    # print("node list is")
+    # pprint(node_list)
+
     i =i+1
+
+def bfs(graph, init_node, end_node):
+    queue = []
+    queue.append([init_node])
+    while queue:
+        BFS_planned_path = queue.pop(0) 
+        node = BFS_planned_path[-1]
+        if node == end_node:
+            return BFS_planned_path
+        for i in graph.get(node, []):
+            new_BFS_planned_path = list(BFS_planned_path)
+            new_BFS_planned_path.append(i)
+            queue.append(new_BFS_planned_path)
+print("visited nodes are")
+pprint(visited_nodes)
+print("Genrated graph is")
+pprint(generated_graph)
+print("node BFS_planned_path is")
+print (bfs(generated_graph, 1, global_node_count))
